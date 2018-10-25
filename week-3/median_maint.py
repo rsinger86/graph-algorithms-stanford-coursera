@@ -109,10 +109,6 @@ heap.insert(3)
 heap.insert(20)
 heap.insert(7)
 
-print(heap.data)
-i = 0
-
-
 print('Extract min', heap.extract_min(), heap.data)
 
 print('Extract min', heap.extract_min(), heap.data)
