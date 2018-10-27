@@ -1,9 +1,13 @@
 from typing import List, Tuple
 from collections import defaultdict
+from operator import lt, gt
 
 
 class Heap(object):
     data: List[int] = []
+
+    def __init__(self, heap_type: str='min'):
+        self.type = heap_type
 
     def get_parent(self, position: int) -> Tuple[int, int]:
         parent_pos = None
@@ -11,7 +15,7 @@ class Heap(object):
         if position % 2 == 0:
             parent_pos = int(position / 2)
         else:
-            parent_pos = int(position/2) 
+            parent_pos = int(position/2)
 
         return self.data[parent_pos], parent_pos
 
@@ -19,10 +23,15 @@ class Heap(object):
         self.data.append(value)
         current_pos = len(self.data) - 1
 
+        if self.type == 'min':
+            comp = gt
+        else:
+            comp = lt
+
         while True:
             parent_value, parent_pos = self.get_parent(current_pos)
  
-            if parent_value > value:
+            if comp(parent_value, value):
                 self.swap_positions(current_pos, parent_pos)
                 current_pos = parent_pos
             else:
@@ -47,18 +56,28 @@ class Heap(object):
         else:
             return None
 
-    def extract_min(self):
+    def extract(self):
         if len(self.data) == 0:
             return None
 
-        min_value = self.data.pop(0)
+        head_value = self.data.pop(0)
 
         if len(self.data) == 0:
-            return min_value
+            return head_value
 
         plucked = self.data.pop()
         self.data.insert(0, plucked)
+        self.correct_heap_invarient()
+        return head_value
+
+    def correct_heap_invarient(self):
         current_pos = 0
+        plucked = self.data[0]
+
+        if self.type == 'min':
+            comp = lt
+        else:
+            comp = gt
 
         while True:
             right_child = self.get_right_child(current_pos)
@@ -70,15 +89,13 @@ class Heap(object):
             elif not left_child and right_child:
                 best_swap = right_child
             elif left_child and right_child:
-                best_swap = left_child if left_child[0] < right_child[0] else right_child
+                best_swap = left_child if comp(left_child[0], right_child[0]) else right_child
             
-            if best_swap and best_swap[0] < plucked:
+            if best_swap and comp(best_swap[0], plucked):
                 self.swap_positions(current_pos, best_swap[1])
                 current_pos = best_swap[1]
             else:
                 break
-        
-        return min_value
 
 
 def load_data() -> List[int]:
@@ -93,7 +110,7 @@ def load_data() -> List[int]:
 
 numbers = load_data()
 
-heap = Heap()
+heap = Heap('max')
 
 heap.insert(9)
 heap.insert(4)
@@ -109,30 +126,30 @@ heap.insert(3)
 heap.insert(20)
 heap.insert(7)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
 
-print('Extract min', heap.extract_min(), heap.data)
+print('Extract min', heap.extract(), heap.data)
