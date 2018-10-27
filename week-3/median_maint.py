@@ -7,7 +7,19 @@ class Heap(object):
     data: List[int] = []
 
     def __init__(self, heap_type: str='min'):
+        if heap_type not in ('min', 'max'):
+            raise Exception('Must set heap type to min or max')
+
+        self.data = []
         self.type = heap_type
+
+    def size(self):
+        return len(self.data)
+
+    def peak_head(self):
+        if len(self.data) == 0:
+            return None
+        return self.data[0]
 
     def get_parent(self, position: int) -> Tuple[int, int]:
         parent_pos = None
@@ -31,7 +43,7 @@ class Heap(object):
         while True:
             parent_value, parent_pos = self.get_parent(current_pos)
  
-            if comp(parent_value, value):
+            if parent_value is not None and comp(parent_value, value):
                 self.swap_positions(current_pos, parent_pos)
                 current_pos = parent_pos
             else:
@@ -103,53 +115,37 @@ def load_data() -> List[int]:
 
     with open('data/numbers.txt', 'r') as f:
         for line in f:
-            numbers.append(int(line))
+            numbers.append(int(line.strip()))
 
     return numbers
 
 
-numbers = load_data()
+heap_left = Heap('max')
+heap_right = Heap('min')
+medians = []
 
-heap = Heap('max')
+for num in load_data():
+    current_median: int = None
 
-heap.insert(9)
-heap.insert(4)
-heap.insert(12)
-heap.insert(11)
-heap.insert(13)
-heap.insert(4)
-heap.insert(4)
-heap.insert(8)
-heap.insert(9)
-heap.insert(1)
-heap.insert(3)
-heap.insert(20)
-heap.insert(7)
+    if heap_left.peak_head() is None or num >= heap_left.peak_head():
+        heap_right.insert(num)
+    else:
+        heap_left.insert(num)
 
-print('Extract min', heap.extract(), heap.data)
+    while heap_left.size() > 0 and heap_left.size() > heap_right.size():
+        shift_value = heap_left.extract()
+        heap_right.insert(shift_value)
+    
+    while heap_right.size() > 0 and heap_right.size() - 1 > heap_left.size():
+        shift_value = heap_right.extract()
+        heap_left.insert(shift_value)
 
-print('Extract min', heap.extract(), heap.data)
+    if (heap_left.size() + heap_right.size()) % 2 == 0:
+        current_median = heap_left.peak_head()
+    else:
+        current_median = heap_right.peak_head()
 
-print('Extract min', heap.extract(), heap.data)
+    medians.append(current_median)
+    
 
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
-
-print('Extract min', heap.extract(), heap.data)
+print('Answer:', sum(medians) % 10000)
